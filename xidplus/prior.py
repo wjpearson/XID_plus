@@ -21,6 +21,7 @@ class prior(object):
         self.sim = self.sim[ind_map]
         self.snpix = sum(ind_map)
 
+    #!#!#--Edited by WJP---#!#!#
     def cut_down_cat(self):
         """Cuts down prior class variables associated with the catalogue data to the MOC assigned to the prior class: self.moc
         """
@@ -42,6 +43,11 @@ class prior(object):
         if hasattr(self,'z_median'):
             self.z_median=self.z_median[sgood]
             self.z_sig=self.z_sig[sgood]
+        #!#!#---Added prior_flux_mu and prior_flux_sig controlls - WJP---#!#!#
+        if hasattr(self,'prior_flux_mu'):
+            self.prior_flux_mu=self.prior_flux_mu[sgood]
+        if hasattr(self,'prior_flux_sig'):
+            self.prior_flux_sig=self.prior_flux_sig[sgood]
 
     def cut_down_prior(self):
 
@@ -92,7 +98,9 @@ class prior(object):
 
         self.bkg = (mu, sigma)
 
-    def prior_cat(self, ra, dec, prior_cat_file, flux_lower=None, flux_upper=None, ID=None, moc=None,z_median=None,z_sig=None):
+    #!#!#--Edited by WJP---#!#!#
+    def prior_cat(self, ra, dec, prior_cat_file, flux_lower=None, flux_upper=None, ID=None, moc=None, z_median=None, z_sig=None,
+                    flux_mu=None, flux_sig=None):
         """Input info for prior catalogue
 
         :param ra: Right ascension (JD2000) of sources
@@ -129,6 +137,10 @@ class prior(object):
         if z_median is not None:
             self.z_median=z_median
             self.z_sig=z_sig
+        #!#!#---Added flux_mu and flux_sig controls - WJP---#!#!#
+        if flux_mu is not None:
+            self.prior_flux_mu = flux_mu
+            self.prior_flux_sig = flux_sig
 
         if ID is None:
             ID = np.arange(1, ra.size + 1, dtype='int64')
@@ -201,16 +213,36 @@ class prior(object):
         self.A = coo_matrix((self.amat_data, (self.amat_row, self.amat_col)), shape=(self.snpix, self.nsrc))
 
 
-
+    #!#!#---Edited by WJP---#!#!#
     def upper_lim_map(self):
         """Update flux upper limit to abs(bkg)+2*sigma_bkg+max(D)
          where max(D) is maximum value of pixels the source contributes to"""
 
-        self.prior_flux_upper = np.full((self.nsrc), 1000.0)
+        #!#!#---Set upper limit to max in map, not 1000 - WJP---#!#!#
+        self.prior_flux_upper = np.full((self.nsrc), np.max(self.sim) - (self.bkg[0] - 2 * self.bkg[1]))
         for i in range(0, self.nsrc):
             ind = self.amat_col == i
             if ind.sum() > 0:
                 self.prior_flux_upper[i] = np.max(self.sim[self.amat_row[ind]]) + (np.abs(self.bkg[0]) + 2 * self.bkg[1])
+
+    #!#!#---Add method to set upper limit as flux - WJP---#!#!#
+    def upper_lim_flux(self, prior_flux_upper):
+        self.flux_scale()
+        """Set flux lower limit (in log10)"""
+        self.prior_flux_upper = np.full((self.nsrc), prior_flux_upper)
+
+    #!#!#---Add method to set lower limit as flux - WJP---#!#!#
+    def lower_lim_flux(self, prior_flux_lower):
+        """Set flux lower limit (in log10)"""
+        self.prior_flux_lower = np.full((self.nsrc), prior_flux_lower)
+
+    #!#!#---Add method to set prior_flux_mu - WJP---#!#!#
+    def mu_flux(self, prior_flux_mu):
+        self.prior_flux_mu = np.full((self.nsrc), prior_flux_mu)
+
+    #!#!#---Add method to set prior_flux_sig - WJP---#!#!#
+    def sigma_flux(self, prior_flux_sig):
+        self.prior_flux_sig = np.full((self.nsrc), prior_flux_sig)
 
     def get_pointing_matrix_unknown_psf(self, bkg=True):
         """Calculate pointing matrix for unknown psf. If bkg = True, bkg is fitted to all pixels. If False, bkg only fitted to where prior sources contribute
