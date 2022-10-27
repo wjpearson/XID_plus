@@ -25,7 +25,7 @@ def create_PACS_cat(posterior, prior100, prior160):
 
     # ----table info-----------------------
     # first define columns
-    c1 = fits.Column(name='help_id', format='27A', array=prior100.ID)
+    c1 = fits.Column(name='HELP_ID', format='27A', array=prior100.ID)
     c2 = fits.Column(name='RA', format='D', unit='degrees', array=prior100.sra)
     c3 = fits.Column(name='Dec', format='D', unit='degrees', array=prior100.sdec)
     c4 = fits.Column(name='F_PACS_100', format='E', unit='mJy',
@@ -128,23 +128,23 @@ def create_PACS_cat(posterior, prior100, prior160):
 
 # noinspection PyPackageRequirements
 
-def create_MIPS_cat(posterior, prior24, Bayes_P24):
+def create_MIPS_cat(posterior, prior24):
 
     """
     Create MIPS catalogue from posterior
     
     :param posterior: MIPS xidplus.posterior class
     :param prior24: MIPS xidplus.prior class
-    :param Bayes_P24:  Bayes Pvalue residual statistic for MIPS 24
     :return: fits hdulist
     """
     import datetime
     nsrc=prior24.nsrc
     rep_maps = postmaps.replicated_maps([prior24], posterior)
-    Bayes_P24 = postmaps.Bayes_Pval_res(prior24, rep_maps[0])
+    Bayes_P24=postmaps.Bayes_Pval_res(prior24,rep_maps[0])
+
     # ----table info-----------------------
     # first define columns
-    c1 = fits.Column(name='help_id', format='27A', array=prior24.ID)
+    c1 = fits.Column(name='HELP_ID', format='27A', array=prior24.ID)
     c2 = fits.Column(name='RA', format='D', unit='degrees', array=prior24.sra)
     c3 = fits.Column(name='Dec', format='D', unit='degrees', array=prior24.sdec)
     c4 = fits.Column(name='F_MIPS_24', format='E', unit='muJy',
@@ -160,7 +160,7 @@ def create_MIPS_cat(posterior, prior24, Bayes_P24):
     c9 = fits.Column(name='Rhat_MIPS_24', format='E', array=posterior.Rhat['src_f'][:,0])
     c10 = fits.Column(name='n_eff_MIPS_24', format='E', array=posterior.n_eff['src_f'][:,0])
     c11 = fits.Column(name='Pval_res_24', format='E', array=Bayes_P24)
-    
+
     tbhdu = fits.BinTableHDU.from_columns([c1, c2, c3, c4, c5, c6, c7, c8, c9, c10, c11])
 
     tbhdu.header.set('TUCD1', 'ID', after='TFORM1')

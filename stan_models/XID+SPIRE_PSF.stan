@@ -46,10 +46,10 @@ data {
 transformed data {
   vector[N_psf] mu;
   matrix[N_psf,N_psf] Sigma;
-  for (i in 1:N_psf) mu[i] <- 1.0;
+  for (i in 1:N_psf) mu[i] = 1.0;
   for (i in 1:N_psf) 
     for (j in 1:N_psf)
-      Sigma[i,j] <- exp(-0.004 * pow(pind[i] - pind[j],2)) + if_else(i==j, 0.00001, 0.0);
+      Sigma[i,j] = exp(-0.004 * pow(pind[i] - pind[j],2)) + if_else(i==j, 0.00001, 0.0);
 }
 
 parameters {
@@ -82,9 +82,9 @@ model {
   vector[nsrc] f_vec_plw;//vector of source fluxes
   // Transform to normal space. As I am sampling variable then transforming I don't need a Jacobian adjustment
   for (n in 1:nsrc) {
-    f_vec_psw[n] <- f_low_lim_psw[n]+(f_up_lim_psw[n]-f_low_lim_psw[n])*src_f_psw[n];
-    f_vec_pmw[n] <- f_low_lim_pmw[n]+(f_up_lim_pmw[n]-f_low_lim_pmw[n])*src_f_pmw[n];
-    f_vec_plw[n] <- f_low_lim_plw[n]+(f_up_lim_plw[n]-f_low_lim_plw[n])*src_f_plw[n];
+    f_vec_psw[n] = f_low_lim_psw[n]+(f_up_lim_psw[n]-f_low_lim_psw[n])*src_f_psw[n];
+    f_vec_pmw[n] = f_low_lim_pmw[n]+(f_up_lim_pmw[n]-f_low_lim_pmw[n])*src_f_pmw[n];
+    f_vec_plw[n] = f_low_lim_plw[n]+(f_up_lim_plw[n]-f_low_lim_plw[n])*src_f_plw[n];
 
 
   }
@@ -108,27 +108,27 @@ model {
    
   // Create model maps (i.e. db_hat = A*f) using sparse multiplication
   for (k in 1:npix_psw) {
-    db_hat_psw[k] <- bkg_psw;
-    sigma_tot_psw[k]<-sqrt(square(sigma_psw[k])+square(sigma_conf_psw));
+    db_hat_psw[k] = bkg_psw;
+    sigma_tot_psw[k]=sqrt(square(sigma_psw[k])+square(sigma_conf_psw));
   }
   for (k in 1:nnz_psw) {
-    db_hat_psw[Row_psw[k]+1] <- db_hat_psw[Row_psw[k]+1] + PSF[Val_psw[k]+1]*f_vec_psw[Col_psw[k]+1];
+    db_hat_psw[Row_psw[k]+1] = db_hat_psw[Row_psw[k]+1] + PSF[Val_psw[k]+1]*f_vec_psw[Col_psw[k]+1];
       }
 
   for (k in 1:npix_pmw) {
-    db_hat_pmw[k] <- bkg_pmw;
-    sigma_tot_pmw[k]<-sqrt(square(sigma_pmw[k])+square(sigma_conf_pmw));
+    db_hat_pmw[k] = bkg_pmw;
+    sigma_tot_pmw[k]=sqrt(square(sigma_pmw[k])+square(sigma_conf_pmw));
   }
   for (k in 1:nnz_pmw) {
-    db_hat_pmw[Row_pmw[k]+1] <- db_hat_pmw[Row_pmw[k]+1] + Val_pmw[k]*f_vec_pmw[Col_pmw[k]+1];
+    db_hat_pmw[Row_pmw[k]+1] = db_hat_pmw[Row_pmw[k]+1] + Val_pmw[k]*f_vec_pmw[Col_pmw[k]+1];
       }
 
   for (k in 1:npix_plw) {
-    db_hat_plw[k] <- bkg_plw;
-    sigma_tot_plw[k]<-sqrt(square(sigma_plw[k])+square(sigma_conf_plw));
+    db_hat_plw[k] = bkg_plw;
+    sigma_tot_plw[k]=sqrt(square(sigma_plw[k])+square(sigma_conf_plw));
   }
   for (k in 1:nnz_plw) {
-    db_hat_plw[Row_plw[k]+1] <- db_hat_plw[Row_plw[k]+1] + Val_plw[k]*f_vec_plw[Col_plw[k]+1];
+    db_hat_plw[Row_plw[k]+1] = db_hat_plw[Row_plw[k]+1] + Val_plw[k]*f_vec_plw[Col_plw[k]+1];
       }
   
   

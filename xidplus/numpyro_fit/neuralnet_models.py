@@ -1,6 +1,8 @@
 from jax import jit # for compiling functions for speedup
-from jax.experimental import stax # neural network library
-from jax.experimental.stax import Conv, Dense, MaxPool, Relu, Flatten, LogSoftmax, LeakyRelu # neural network layers
+#from jax.experimental import stax # neural network library
+#from jax.experimental.stax import Conv, Dense, MaxPool, Relu, Flatten, LogSoftmax, LeakyRelu # neural network layers
+from jax.example_libraries import stax # neural network library
+from jax.example_libraries.stax import Conv, Dense, MaxPool, Relu, Flatten, LogSoftmax, LeakyRelu # neural network layers
 
 def CIGALE_emulator():
     output_cols=['spire_250','spire_350','spire_500']

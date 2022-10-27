@@ -23,17 +23,17 @@ model {
 
   bkg ~normal(bkg_prior,bkg_prior_sig);
   for (n in 1:nsrc) {
-    f_vec[n] <- src_f[n];
+    f_vec[n] = src_f[n];
   }
-  f_vec[nsrc+1] <-bkg;
+  f_vec[nsrc+1] = bkg;
 
   #src_f ~cauchy(0,10); // set cauchy distribution for fluxes i.e. expect lower
 
   for (k in 1:npix) {
-    db_hat[k] <- 0;
+    db_hat[k] = 0;
   }
   for (k in 1:nnz) {
-    db_hat[Row[k]+1] <- db_hat[Row[k]+1] + Val[k]*f_vec[Col[k]+1];
+    db_hat[Row[k]+1] = db_hat[Row[k]+1] + Val[k]*f_vec[Col[k]+1];
       }
   db ~ normal(db_hat,sigma);
     }

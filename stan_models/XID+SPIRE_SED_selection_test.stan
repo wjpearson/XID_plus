@@ -5,18 +5,18 @@ int intFloor(int leftStart, int rightStart, real iReal)
   int left;
   int right;
 
-  left <- leftStart;
-  right <- rightStart;
+  left = leftStart;
+  right = rightStart;
 
   while((left + 1) < right) {
     int mid;
     // print("left, right, mid, i, ", left, ", ", right, ", ", mid, ", ", iReal);
-    mid <- left + (right - left) / 2;
+    mid = left + (right - left) / 2;
     if(iReal < mid) {
-      right <- mid;
+      right = mid;
     }
     else {
-      left <- mid;
+      left = mid;
     }
   }
   return left;
@@ -34,15 +34,15 @@ real interpolateLinear(real[] arr, real i)
   // print("interpolating ", i);
 
   // Get i, value at left. If exact time match, then return value.
-  iLeft <- intFloor(1, size(arr), i);
-  valLeft <- arr[iLeft];
+  iLeft = intFloor(1, size(arr), i);
+  valLeft = arr[iLeft];
   if(iLeft == i) {
     return valLeft;
   }
 
   // Get i, value at right.
-  iRight <- iLeft + 1;
-  valRight <- arr[iRight];
+  iRight = iLeft + 1;
+  valRight = arr[iRight];
 
   // Linearly interpolate between values at left and right.
   return valLeft + (valRight - valLeft) * (i - iLeft);

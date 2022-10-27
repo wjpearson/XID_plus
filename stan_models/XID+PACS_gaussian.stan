@@ -47,7 +47,7 @@ model {
     // Transform to normal space. As I am sampling variable then transforming I don't need a Jacobian adjustment
     for (n in 1:nsrc) {
       src_f[i,n] ~ normal(f_mu[i,n],f_sigma[i,n]) T[0,1];
-      f_vec[i,n] <- f_low_lim[i,n]+(f_up_lim[i,n]-f_low_lim[i,n])*src_f[i,n];
+      f_vec[i,n] = f_low_lim[i,n]+(f_up_lim[i,n]-f_low_lim[i,n])*src_f[i,n];
     }
 
     //Prior on background 
@@ -59,19 +59,19 @@ model {
    
   // Create model maps (i.e. db_hat = A*f) using sparse multiplication
   for (k in 1:npix_psw) {
-    db_hat_psw[k] <- bkg[1];
-    sigma_tot_psw[k]<-sqrt(square(sigma_psw[k])+square(sigma_conf[1]));
+    db_hat_psw[k] = bkg[1];
+    sigma_tot_psw[k]=sqrt(square(sigma_psw[k])+square(sigma_conf[1]));
   }
   for (k in 1:nnz_psw) {
-    db_hat_psw[Row_psw[k]+1] <- db_hat_psw[Row_psw[k]+1] + Val_psw[k]*f_vec[1][Col_psw[k]+1];
+    db_hat_psw[Row_psw[k]+1] = db_hat_psw[Row_psw[k]+1] + Val_psw[k]*f_vec[1][Col_psw[k]+1];
   }
 
   for (k in 1:npix_pmw) {
-    db_hat_pmw[k] <-  bkg[2];
-    sigma_tot_pmw[k]<-sqrt(square(sigma_pmw[k])+square(sigma_conf[2]));
+    db_hat_pmw[k] =  bkg[2];
+    sigma_tot_pmw[k]=sqrt(square(sigma_pmw[k])+square(sigma_conf[2]));
   }
   for (k in 1:nnz_pmw) {
-    db_hat_pmw[Row_pmw[k]+1] <- db_hat_pmw[Row_pmw[k]+1] + Val_pmw[k]*f_vec[2][Col_pmw[k]+1];
+    db_hat_pmw[Row_pmw[k]+1] = db_hat_pmw[Row_pmw[k]+1] + Val_pmw[k]*f_vec[2][Col_pmw[k]+1];
   }
 
 

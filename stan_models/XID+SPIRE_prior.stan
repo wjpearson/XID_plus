@@ -73,15 +73,15 @@ model {
   
 
   //background is now contribution from confusion only!!
-  f_vec_psw[nsrc+1] <-bkg_psw;
-  f_vec_pmw[nsrc+1] <-bkg_pmw;
-  f_vec_plw[nsrc+1] <-bkg_plw;
+  f_vec_psw[nsrc+1] =bkg_psw;
+  f_vec_pmw[nsrc+1] =bkg_pmw;
+  f_vec_plw[nsrc+1] =bkg_plw;
 
   // Transform to normal space. As I am sampling variable then transforming I don't need a Jacobian adjustment
   for (n in 1:nsrc) {
-    f_vec_psw[n] <- pow(10.0,src_f_psw[n]);
-    f_vec_pmw[n] <- pow(10.0,src_f_pmw[n]);
-    f_vec_plw[n] <- pow(10.0,src_f_plw[n]);
+    f_vec_psw[n] = pow(10.0,src_f_psw[n]);
+    f_vec_pmw[n] = pow(10.0,src_f_pmw[n]);
+    f_vec_plw[n] = pow(10.0,src_f_plw[n]);
 
 
   }
@@ -89,24 +89,24 @@ model {
  
   // Create model maps (i.e. db_hat = A*f) using sparse multiplication
   for (k in 1:npix_psw) {
-    db_hat_psw[k] <- 0;
+    db_hat_psw[k] = 0;
   }
   for (k in 1:nnz_psw) {
-    db_hat_psw[Row_psw[k]+1] <- db_hat_psw[Row_psw[k]+1] + Val_psw[k]*f_vec_psw[Col_psw[k]+1];
+    db_hat_psw[Row_psw[k]+1] = db_hat_psw[Row_psw[k]+1] + Val_psw[k]*f_vec_psw[Col_psw[k]+1];
       }
 
   for (k in 1:npix_pmw) {
-    db_hat_pmw[k] <- 0;
+    db_hat_pmw[k] = 0;
   }
   for (k in 1:nnz_pmw) {
-    db_hat_pmw[Row_pmw[k]+1] <- db_hat_pmw[Row_pmw[k]+1] + Val_pmw[k]*f_vec_pmw[Col_pmw[k]+1];
+    db_hat_pmw[Row_pmw[k]+1] = db_hat_pmw[Row_pmw[k]+1] + Val_pmw[k]*f_vec_pmw[Col_pmw[k]+1];
       }
 
   for (k in 1:npix_plw) {
-    db_hat_plw[k] <- 0;
+    db_hat_plw[k] = 0;
   }
   for (k in 1:nnz_plw) {
-    db_hat_plw[Row_plw[k]+1] <- db_hat_plw[Row_plw[k]+1] + Val_plw[k]*f_vec_plw[Col_plw[k]+1];
+    db_hat_plw[Row_plw[k]+1] = db_hat_plw[Row_plw[k]+1] + Val_plw[k]*f_vec_plw[Col_plw[k]+1];
       }
 
 
@@ -118,10 +118,10 @@ model {
 
 
   // As actual maps are mean subtracted, requires a Jacobian adjustment
-  //db_psw <- db_obs_psw - mean(db_obs_psw)
+  //db_psw = db_obs_psw - mean(db_obs_psw)
   //increment_log_prob(log((size(db_obs_psw)-1)/size(db_obs_psw)))
-  //db_pmw <- db_obs_pmw - mean(db_obs_pmw)
+  //db_pmw = db_obs_pmw - mean(db_obs_pmw)
   //increment_log_prob(log((size(db_obs_pmw)-1)/size(db_obs_pmw)))
-  //db_plw <- db_obs_plw - mean(db_obs_plw)
+  //db_plw = db_obs_plw - mean(db_obs_plw)
   //increment_log_prob(log((size(db_obs_plw)-1)/size(db_obs_plw)))
     }

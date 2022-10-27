@@ -140,7 +140,7 @@ model{
     z~normal(z_median,z_sig);
     for (b in 1:nband){
     for (t in 1:nTemp){
-        ps[t]<-gp_pred_lpdf(z,SEDs[t,b],red, alpha, rho, sigma, 1e-10, src_f[b]-Nbb);
+        ps[t]=gp_pred_lpdf(z,SEDs[t,b],red, alpha, rho, sigma, 1e-10, src_f[b]-Nbb);
 	}
     target+=log_sum_exp(ps)
     }
@@ -151,52 +151,52 @@ model{
    
   // Create model maps (i.e. db_hat = A*f) using sparse multiplication
   for (k in 1:npix_mips24) {
-    db_hat_mips24[k] <- bkg[1];
-    sigma_tot_mips24[k]<-sqrt(square(sigma_mips24[k])+square(sigma_conf[1]));
+    db_hat_mips24[k] = bkg[1];
+    sigma_tot_mips24[k]=sqrt(square(sigma_mips24[k])+square(sigma_conf[1]));
   }
   for (k in 1:nnz_mips24) {
-    db_hat_mips24[Row_mips24[k]+1] <- db_hat_mips24[Row_mips24[k]+1] + Val_mips24[k]*pow(10.0,src_f[1][Col_mips24[k]+1]);
+    db_hat_mips24[Row_mips24[k]+1] = db_hat_mips24[Row_mips24[k]+1] + Val_mips24[k]*pow(10.0,src_f[1][Col_mips24[k]+1]);
       }
 
   for (k in 1:npix_pacs100) {
-    db_hat_pacs100[k] <- bkg[2];
-    sigma_tot_pacs100[k]<-sqrt(square(sigma_pacs100[k])+square(sigma_conf[2]));
+    db_hat_pacs100[k] = bkg[2];
+    sigma_tot_pacs100[k]=sqrt(square(sigma_pacs100[k])+square(sigma_conf[2]));
   }
   for (k in 1:nnz_pacs100) {
-    db_hat_pacs100[Row_pacs100[k]+1] <- db_hat_pacs100[Row_pacs100[k]+1] + Val_pacs100[k]*pow(10.0,src_f[2][Col_pacs100[k]+1]);
+    db_hat_pacs100[Row_pacs100[k]+1] = db_hat_pacs100[Row_pacs100[k]+1] + Val_pacs100[k]*pow(10.0,src_f[2][Col_pacs100[k]+1]);
       }
 
   for (k in 1:npix_pacs160) {
-    db_hat_pacs160[k] <- bkg[3];
-    sigma_tot_pacs160[k]<-sqrt(square(sigma_pacs160[k])+square(sigma_conf[3]));
+    db_hat_pacs160[k] = bkg[3];
+    sigma_tot_pacs160[k]=sqrt(square(sigma_pacs160[k])+square(sigma_conf[3]));
   }
   for (k in 1:nnz_pacs160) {
-    db_hat_pacs160[Row_pacs160[k]+1] <- db_hat_pacs160[Row_pacs160[k]+1] + Val_pacs160[k]*pow(10.0,src_f[3][Col_pacs160[k]+1]);
+    db_hat_pacs160[Row_pacs160[k]+1] = db_hat_pacs160[Row_pacs160[k]+1] + Val_pacs160[k]*pow(10.0,src_f[3][Col_pacs160[k]+1]);
       }
 
 
   for (k in 1:npix_psw) {
-    db_hat_psw[k] <- bkg[4];
-    sigma_tot_psw[k]<-sqrt(square(sigma_psw[k])+square(sigma_conf[4]));
+    db_hat_psw[k] = bkg[4];
+    sigma_tot_psw[k]=sqrt(square(sigma_psw[k])+square(sigma_conf[4]));
   }
   for (k in 1:nnz_psw) {
-    db_hat_psw[Row_psw[k]+1] <- db_hat_psw[Row_psw[k]+1] + Val_psw[k]*pow(10.0,src_f[4][Col_psw[k]+1]);
+    db_hat_psw[Row_psw[k]+1] = db_hat_psw[Row_psw[k]+1] + Val_psw[k]*pow(10.0,src_f[4][Col_psw[k]+1]);
       }
 
   for (k in 1:npix_pmw) {
-    db_hat_pmw[k] <-  bkg[5];
-    sigma_tot_pmw[k]<-sqrt(square(sigma_pmw[k])+square(sigma_conf[5]));
+    db_hat_pmw[k] =  bkg[5];
+    sigma_tot_pmw[k]=sqrt(square(sigma_pmw[k])+square(sigma_conf[5]));
   }
   for (k in 1:nnz_pmw) {
-    db_hat_pmw[Row_pmw[k]+1] <- db_hat_pmw[Row_pmw[k]+1] + Val_pmw[k]*pow(10.0,src_f[5][Col_pmw[k]+1]);
+    db_hat_pmw[Row_pmw[k]+1]  db_hat_pmw[Row_pmw[k]+1] + Val_pmw[k]*pow(10.0,src_f[5][Col_pmw[k]+1]);
       }
 
   for (k in 1:npix_plw) {
-    db_hat_plw[k] <- bkg[6];
-    sigma_tot_plw[k]<-sqrt(square(sigma_plw[k])+square(sigma_conf[6]));
+    db_hat_plw[k] = bkg[6];
+    sigma_tot_plw[k]=sqrt(square(sigma_plw[k])+square(sigma_conf[6]));
   }
   for (k in 1:nnz_plw) {
-    db_hat_plw[Row_plw[k]+1] <- db_hat_plw[Row_plw[k]+1] + Val_plw[k]*pow(10.0,src_f[6][Col_plw[k]+1]);
+    db_hat_plw[Row_plw[k]+1] = db_hat_plw[Row_plw[k]+1] + Val_plw[k]*pow(10.0,src_f[6][Col_plw[k]+1]);
       }
 
 
