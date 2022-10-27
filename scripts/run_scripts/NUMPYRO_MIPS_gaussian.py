@@ -22,7 +22,6 @@ SMAPv='6.0'
 # In[7]:
 
 pswfits=imfolder+'pySIDES_from_original_MIPS24_smoothed_Jy_beam.fits' #MIPS 24 map
-pswnois=imfolder+'mips_24_GO3_pySIDES.fits' #MIPS 24 noise map
 
 
 #----output folder-----------------
@@ -45,8 +44,8 @@ bkg24=-5
 
 
 ids = fcat['id']
-PSW_mu = fcat['SMIPS24']*1e3 # * hasIRAC
-PSW_sigma = (fcat['S24']*1e3/3) * 2
+PSW_mu = fcat['SMIPS24'] # * hasIRAC
+PSW_sigma = (fcat['S24']/10) * 2
 
 # Open images and noise maps and use WCS module in astropy to get header information
 
@@ -55,21 +54,18 @@ PSW_sigma = (fcat['S24']*1e3/3) * 2
 #------24-------------
 hdulist = fits.open(pswfits)
 im24phdu=hdulist[0].header
-im24hdu=hdulist[0].header
+im24hdu=hdulist[1].header
 
-im24=hdulist[0].data *1.0E3
-w_24 = wcs.WCS(hdulist[0].header)
-pixsize24=3600.0*w_24.wcs.cdelt[1] #pixel size (in arcseconds)
-hdulist.close()
-
-hdulist = fits.open(pswnois)
-nim24=hdulist[0].data *1.0E3
+im24=hdulist[1].data *1.0E3
+nim24=hdulist[2].data *1.0E3
+w_24 = wcs.WCS(hdulist[1].header)
+pixsize24=3600.0*w_24.wcs.cd[1,1] #pixel size (in arcseconds)
 hdulist.close()
 
 
 #only use all aources with predicted PSW > 0.7
 sgood=f_src == False
-sgood1=PSW_mu > 0.005
+sgood1=psw_mu > 0.1
 sgood *= sgood1
 
 inra=inra[sgood]
@@ -91,7 +87,7 @@ from astropy.convolution import Gaussian2DKernel
 #Set prior classes
 #---prior24---------
 prior24=xidplus.prior(im24,nim24,im24phdu,im24hdu) #Initialise with map, uncertianty map, wcs info and primary header
-prior24.prior_cat(inra,indec,prior_cat,flux_mu=PSW_mu[sgood],flux_sig=PSW_sigma[sgood],ID=ids[sgood]) #Set input catalogue
+prior24.prior_cat(inra,indec,prior_cat,flux_mu=PSW_mu[sgood],flux_sigma=PSW_sigma[sgood],ID=ids[sgood]) #Set input catalogue
 prior24.prior_bkg(bkg24,5) #Set prior on background
 
 print('fitting '+ str(prior24.nsrc)+' sources \n')
@@ -149,9 +145,9 @@ prior24.upper_lim_map()
 prior24.lower_lim_flux(0.0)
 
 #RUN XID+
-from xidplus.stan_fit import MIPS
-fit=MIPS.MIPS_24_gaussian(prior24,iter=1500)
-posterior=xidplus.posterior_stan(fit,[prior24])
+from xidplus.numpyro_fit import MIPS
+fit=MIPS.MIPS_24_gaussian(prior24,num_samples=750,num_warmup=750)
+posterior=xidplus.posterior_numpyro(fit,[prior24])
 #Save output
 outfile=output_folder+'MIPS_24_gaussian_'+str(tiles[taskid-1])+'_'+str(order)+'.pkl'
 with open(outfile, 'wb') as f:

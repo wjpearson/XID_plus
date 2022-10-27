@@ -39,7 +39,7 @@ def MIPS_24(prior,num_samples=500,num_warmup=500,num_chains=4,chain_method='para
     mcmc.run(rng_key, [prior])
     return mcmc
 
-def mips_model_gaussian(prior):
+def mips_model_gaussian(priors):
     pointing_matrices = [([p.amat_row, p.amat_col], p.amat_data) for p in priors]
     flux_lower = np.asarray([p.prior_flux_lower for p in priors]).T
     flux_upper = np.asarray([p.prior_flux_upper for p in priors]).T

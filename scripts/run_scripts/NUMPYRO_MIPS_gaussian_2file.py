@@ -26,7 +26,7 @@ pswnois=imfolder+'mips_24_GO3_pySIDES.fits' #MIPS 24 noise map
 
 
 #----output folder-----------------
-output_folder='/home/pearsonw/dev/XID_plus/output/'
+output_folder='/home/pearsonw/dev/XID_plus/output_numpyro/'
 
 #Folder containing prior input catalogue
 folder='/home/pearsonw/dev/XID_plus/input/'
@@ -149,9 +149,9 @@ prior24.upper_lim_map()
 prior24.lower_lim_flux(0.0)
 
 #RUN XID+
-from xidplus.stan_fit import MIPS
-fit=MIPS.MIPS_24_gaussian(prior24,iter=1500)
-posterior=xidplus.posterior_stan(fit,[prior24])
+from xidplus.numpyro_fit import MIPS
+fit=MIPS.MIPS_24_gaussian(prior24,num_samples=750,num_warmup=750)
+posterior=xidplus.posterior_numpyro(fit,[prior24])
 #Save output
 outfile=output_folder+'MIPS_24_gaussian_'+str(tiles[taskid-1])+'_'+str(order)+'.pkl'
 with open(outfile, 'wb') as f:

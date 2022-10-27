@@ -46,7 +46,7 @@ bkg24=-5
 
 ids = fcat['id']
 PSW_mu = fcat['SMIPS24']*1e3 # * hasIRAC
-PSW_sigma = (fcat['S24']*1e3/3) * 2
+PSW_sigma = (fcat['S24']*1e3/10) * 2
 
 # Open images and noise maps and use WCS module in astropy to get header information
 
@@ -91,7 +91,7 @@ from astropy.convolution import Gaussian2DKernel
 #Set prior classes
 #---prior24---------
 prior24=xidplus.prior(im24,nim24,im24phdu,im24hdu) #Initialise with map, uncertianty map, wcs info and primary header
-prior24.prior_cat(inra,indec,prior_cat,flux_mu=PSW_mu[sgood],flux_sig=PSW_sigma[sgood],ID=ids[sgood]) #Set input catalogue
+prior24.prior_cat(inra,indec,prior_cat,ID=ids[sgood]) #Set input catalogue
 prior24.prior_bkg(bkg24,5) #Set prior on background
 
 print('fitting '+ str(prior24.nsrc)+' sources \n')
@@ -113,7 +113,7 @@ tiles=moc_routines.get_HEALPix_pixels(order,prior24.sra,prior24.sdec,unique=True
 try:
     if sys.argv[1] == 'Master':
         print('----- There are '+str(len(tiles))+' tiles required for input catalogue')
-        outfile=output_folder+'Master_prior_gaussian.pkl'
+        outfile=output_folder+'Master_prior_vanilla.pkl'
         with open(outfile, 'wb') as f:
             pickle.dump({'psw':prior24,'tiles':tiles,'order':order},f)
         raise SystemExit()
@@ -149,11 +149,11 @@ prior24.upper_lim_map()
 prior24.lower_lim_flux(0.0)
 
 #RUN XID+
-from xidplus.stan_fit import MIPS
-fit=MIPS.MIPS_24_gaussian(prior24,iter=1500)
-posterior=xidplus.posterior_stan(fit,[prior24])
+from xidplus.numpyro_fit import MIPS
+fit=MIPS.MIPS_24(prior24,num_samples=750,num_warmup=750)
+posterior=xidplus.posterior_numpyro(fit,[prior24])
 #Save output
-outfile=output_folder+'MIPS_24_gaussian_'+str(tiles[taskid-1])+'_'+str(order)+'.pkl'
+outfile=output_folder+'MIPS_24_vanilla_'+str(tiles[taskid-1])+'_'+str(order)+'.pkl'
 with open(outfile, 'wb') as f:
    pickle.dump({'psw':prior24,'posterior':posterior},f)
 
