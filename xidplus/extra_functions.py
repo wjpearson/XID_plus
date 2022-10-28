@@ -236,7 +236,7 @@ def make_master_SPIRE_catalogue_HEALpix(output_folder, Master_filename, tile_fil
 
                 hdulist[1].data = hdulist[1].data[kept_sources]
                 tileTable = Table(hdulist[1].data)
-                tileTable['tile'] = i
+                tileTable['tile'] = np.full(len(tileTable),i)
                 #Append the tile catalogue to the master catalogue
                 dataTable = vstack([dataTable, tileTable])
 
@@ -340,7 +340,7 @@ def make_master_SPIRE_catalogue_HEALpix_split(output_folder, Master_filename, ti
 
                 hdulist[1].data = hdulist[1].data[kept_sources]
                 tileTable = Table(hdulist[1].data)
-                tileTable['tile'] = i
+                tileTable['tile'] = np.full(len(tileTable),i)
                 #Append the tile catalogue to the master catalogue
                 dataTable = vstack([dataTable, tileTable])
 
@@ -1131,7 +1131,7 @@ def make_master_MIPS_catalogue_HEALpix(output_folder, Master_filename, tile_file
 
                 hdulist[1].data = hdulist[1].data[kept_sources]
                 tileTable = Table(hdulist[1].data)
-                tileTable['tile'] = i
+                tileTable['tile'] = np.full(len(tileTable),i)
                 #Append the tile catalogue to the master catalogue
                 dataTable = vstack([dataTable, tileTable])
 
@@ -1591,7 +1591,7 @@ def make_master_PACS_catalogue_HEALpix(output_folder, Master_filename, tile_file
 
                 hdulist[1].data = hdulist[1].data[kept_sources]
                 tileTable = Table(hdulist[1].data)
-                tileTable['tile'] = i
+                tileTable['tile'] = np.full(len(tileTable),i)
                 #Append the tile catalogue to the master catalogue
                 dataTable = vstack([dataTable, tileTable])
 

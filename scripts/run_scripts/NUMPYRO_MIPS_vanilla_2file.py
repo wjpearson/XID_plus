@@ -26,7 +26,7 @@ pswnois=imfolder+'mips_24_GO3_pySIDES.fits' #MIPS 24 noise map
 
 
 #----output folder-----------------
-output_folder='/home/pearsonw/dev/XID_plus/output/'
+output_folder='/home/pearsonw/dev/XID_plus/output_numpyro/'
 
 #Folder containing prior input catalogue
 folder='/home/pearsonw/dev/XID_plus/input/'
