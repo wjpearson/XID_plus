@@ -5,8 +5,8 @@ import xidplus
 from xidplus import extra_functions as extra
 
 output_folder = '/home/pearsonw/dev/XID_plus/output_numpyro/'
-tile_file_name = 'MIPS_24_gaussian_'
-Master_filename = 'Master_prior_gaussian.pkl'
+tile_file_name = 'MIPS_24_vanilla_'
+Master_filename = 'Master_prior_vanilla.pkl'
 instrument = 'MIPS' #SPIRE or PACS or MIPS
 
 if instrument == 'SPIRE':

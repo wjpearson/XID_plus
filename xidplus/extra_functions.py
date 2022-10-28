@@ -1134,6 +1134,7 @@ def make_master_MIPS_catalogue_HEALpix(output_folder, Master_filename, tile_file
                 tileTable['tile'] = np.full(len(tileTable),i)
                 #Append the tile catalogue to the master catalogue
                 dataTable = vstack([dataTable, tileTable])
+                print(len(dataTable))
 
     #Write the master catalogue to fits
     master_cat = create_XIDp_MIPScat_from_Table(dataTable, prior24)
