@@ -12,7 +12,7 @@ import xidplus
     Adapted by William J. Pearson'''
 
 #Folder containing maps
-imfolder='/home/pearsonw/dev/XID_plus/sky_maps/MIPS/' #'./input/'
+imfolder='/mnt/disk1/sky_maps/SIDES/MIPS/' #'./input/'
 #field
 field='COSMOS'
 #SMAP version
@@ -26,10 +26,10 @@ pswnois=imfolder+'mips_24_GO3_pySIDES.fits' #MIPS 24 noise map
 
 
 #----output folder-----------------
-output_folder='/home/pearsonw/dev/XID_plus/output/'
+output_folder='/mnt/disk1/sky_maps/SIDES/output/'
 
 #Folder containing prior input catalogue
-folder='/home/pearsonw/dev/XID_plus/input/'
+folder='/mnt/disk1/sky_maps/SIDES/'
 #prior catalogue
 prior_cat='pySIDES_from_original.fits'
 

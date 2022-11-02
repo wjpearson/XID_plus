@@ -50,6 +50,46 @@ def all_bands(PACS_100,PACS_160,chains=4,iter=1000):
     #return fit data
     return fit
 
+def all_bands_log10(PACS_100,PACS_160,chains=4,iter=1000):
+    """
+    Fit the two PACS bands
+
+    :param PACS_100: xidplus.prior class
+    :param PACS_160: xidplus.prior class
+    :param chains: number of chains
+    :param iter: number of samples
+    :return: pystan fit object
+    """
+
+    #input data into a dictionary
+
+    XID_data = {'nsrc': PACS_100.nsrc,
+                'f_low_lim': [PACS_100.prior_flux_lower, PACS_160.prior_flux_lower],
+                'f_up_lim': [PACS_100.prior_flux_upper, PACS_160.prior_flux_upper],
+                'bkg_prior': [PACS_100.bkg[0], PACS_160.bkg[0]],
+                'bkg_prior_sig': [PACS_100.bkg[1], PACS_160.bkg[1]],
+                'npix_psw': PACS_100.snpix,
+                'nnz_psw': PACS_100.amat_data.size,
+                'db_psw': PACS_100.sim,
+                'sigma_psw': PACS_100.snim,
+                'Val_psw': PACS_100.amat_data,
+                'Row_psw': PACS_100.amat_row.astype(long),
+                'Col_psw': PACS_100.amat_col.astype(long),
+                'npix_pmw': PACS_160.snpix,
+                'nnz_pmw': PACS_160.amat_data.size,
+                'db_pmw': PACS_160.sim,
+                'sigma_pmw': PACS_160.snim,
+                'Val_pmw': PACS_160.amat_data,
+                'Row_pmw': PACS_160.amat_row.astype(long),
+                'Col_pmw': PACS_160.amat_col.astype(long)}
+    #see if model has already been compiled. If not, compile and save it
+    model_file='/XID+logPACS'
+    from xidplus.stan_fit import get_stancode
+    sm = get_stancode(model_file)
+
+    fit = sm.sampling(data=XID_data,iter=iter,chains=chains,verbose=True,init='random')
+    #return fit data
+    return fit
 
 def all_bands_gaussian(PACS_100,PACS_160,chains=4,iter=1000):
     """
