@@ -214,7 +214,7 @@ class prior(object):
 
 
     #!#!#---Edited by WJP---#!#!#
-    def upper_lim_map(self):
+    def upper_lim_map(self, log10=False):
         """Update flux upper limit to abs(bkg)+2*sigma_bkg+max(D)
          where max(D) is maximum value of pixels the source contributes to"""
 
@@ -224,17 +224,29 @@ class prior(object):
             ind = self.amat_col == i
             if ind.sum() > 0:
                 self.prior_flux_upper[i] = np.max(self.sim[self.amat_row[ind]]) + (np.abs(self.bkg[0]) + 2 * self.bkg[1])
+        if log10:
+            nve = np.where(self.prior_flux_upper <= 0)
+            self.prior_flux_upper[nve] = 1e-10
+            self.prior_flux_upper = np.log10(self.prior_flux_upper)
 
     #!#!#---Add method to set upper limit as flux - WJP---#!#!#
-    def upper_lim_flux(self, prior_flux_upper):
+    def upper_lim_flux(self, prior_flux_upper, log10=False):
         self.flux_scale()
         """Set flux lower limit (in log10)"""
         self.prior_flux_upper = np.full((self.nsrc), prior_flux_upper)
+        if log10:
+            nve = np.where(self.prior_flux_upper <= 0)
+            self.prior_flux_upper[nve] = 1e-10
+            self.prior_flux_upper = np.log10(self.prior_flux_upper)
 
     #!#!#---Add method to set lower limit as flux - WJP---#!#!#
-    def lower_lim_flux(self, prior_flux_lower):
+    def lower_lim_flux(self, prior_flux_lower, log10=False):
         """Set flux lower limit (in log10)"""
         self.prior_flux_lower = np.full((self.nsrc), prior_flux_lower)
+        if log10:
+            nve = np.where(self.prior_flux_lower <= 0)
+            self.prior_flux_lower[nve] = 1e-10
+            self.prior_flux_lower = np.log10(self.prior_flux_lower)
 
     #!#!#---Add method to set prior_flux_mu - WJP---#!#!#
     def mu_flux(self, prior_flux_mu):
