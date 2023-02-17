@@ -56,7 +56,7 @@ model {
   for (i in 1:3){
     // Transform to normal space. As I am sampling variable then transforming I don't need a Jacobian adjustment
     for (n in 1:nsrc) {
-      src_f[i,n] ~ normal(f_mu[i,n],f_sigma[i,n]) T[0,1];
+      src_f[i,n] ~ normal(f_mu[i,n],f_sig[i,n]) T[0,1];
       f_vec[i,n] = f_low_lim[i,n]+(f_up_lim[i,n]-f_low_lim[i,n])*src_f[i,n];
     }
 

@@ -11,6 +11,8 @@ import os
 numpyro.set_host_device_count(os.cpu_count())
 from xidplus.numpyro_fit.misc import sp_matmul
 
+from xidplus.numpyro_fit.logXUniform import log10Uniform
+
 def spire_model(priors):
     pointing_matrices = [([p.amat_row, p.amat_col], p.amat_data) for p in priors]
     flux_lower = np.asarray([p.prior_flux_lower for p in priors]).T
