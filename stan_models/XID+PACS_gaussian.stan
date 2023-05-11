@@ -1,28 +1,28 @@
 //Full Bayesian inference fit  XID
 data {
-  int<lower=0> nsrc;//number of sources
-  vector[nsrc] f_low_lim[2];//upper limit of flux
-  vector[nsrc] f_up_lim[2];//upper limit of flux
+  int<lower=0> nsrc;            //number of sources
+  vector[nsrc] f_low_lim[2];    //upper limit of flux
+  vector[nsrc] f_up_lim[2];     //upper limit of flux
   vector[nsrc] f_mu[2];         //mu of flux distribution
-  vector[nsrc] f_sig[2];      //sigma of flux distribution
-  real bkg_prior[2];//prior estimate of background
-  real bkg_prior_sig[2];//sigma of prior estimate of background
+  vector[nsrc] f_sig[2];        //sigma of flux distribution
+  real bkg_prior[2];            //prior estimate of background
+  real bkg_prior_sig[2];        //sigma of prior estimate of background
   //----PSW----
-  int<lower=0> npix_psw;//number of pixels
-  int<lower=0> nnz_psw; //number of non neg entries in A
-  vector[npix_psw] db_psw;//flattened map
-  vector[npix_psw] sigma_psw;//flattened uncertianty map (assuming no covariance between pixels)
-  vector[nnz_psw] Val_psw;//non neg values in image matrix
-  int Row_psw[nnz_psw];//Rows of non neg values in image matrix
-  int Col_psw[nnz_psw];//Cols of non neg values in image matrix
+  int<lower=0> npix_psw;        //number of pixels
+  int<lower=0> nnz_psw;         //number of non neg entries in A
+  vector[npix_psw] db_psw;      //flattened map
+  vector[npix_psw] sigma_psw;   //flattened uncertianty map (assuming no covariance between pixels)
+  vector[nnz_psw] Val_psw;      //non neg values in image matrix
+  int Row_psw[nnz_psw];         //Rows of non neg values in image matrix
+  int Col_psw[nnz_psw];         //Cols of non neg values in image matrix
   //----PMW----
-  int<lower=0> npix_pmw;//number of pixels
-  int<lower=0> nnz_pmw; //number of non neg entries in A
-  vector[npix_pmw] db_pmw;//flattened map
-  vector[npix_pmw] sigma_pmw;//flattened uncertianty map (assuming no covariance between pixels)
-  vector[nnz_pmw] Val_pmw;//non neg values in image matrix
-  int Row_pmw[nnz_pmw];//Rows of non neg valies in image matrix
-  int Col_pmw[nnz_pmw];//Cols of non neg values in image matrix
+  int<lower=0> npix_pmw;        //number of pixels
+  int<lower=0> nnz_pmw;         //number of non neg entries in A
+  vector[npix_pmw] db_pmw;      //flattened map
+  vector[npix_pmw] sigma_pmw;   //flattened uncertianty map (assuming no covariance between pixels)
+  vector[nnz_pmw] Val_pmw;      //non neg values in image matrix
+  int Row_pmw[nnz_pmw];         //Rows of non neg valies in image matrix
+  int Col_pmw[nnz_pmw];         //Cols of non neg values in image matrix
   
 }
 
@@ -46,7 +46,7 @@ model {
   for (i in 1:2){
     // Transform to normal space. As I am sampling variable then transforming I don't need a Jacobian adjustment
     for (n in 1:nsrc) {
-      src_f[i,n] ~ normal(f_mu[i,n],f_sigma[i,n]) T[0,1];
+      src_f[i,n] ~ normal(f_mu[i,n],f_sig[i,n]) T[0,1];
       f_vec[i,n] = f_low_lim[i,n]+(f_up_lim[i,n]-f_low_lim[i,n])*src_f[i,n];
     }
 

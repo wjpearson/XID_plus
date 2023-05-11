@@ -858,9 +858,9 @@ def make_master_map_HEALpix(output_folder, Master_filename, tile_file_name, band
 
     fits.writeto(output_folder+'Master_Map_'+band+'.fits', pred_map, imhdu, overwrite = True)
 
-def make_replicated_map_HEALpix(output_folder, Master_filename, tile_file_name, band, im, imhdu, w_pri, start_tile=0, noise=False):
+def make_replicated_map_HEALpix(output_folder, Master_filename, tile_file_name, tele_band, im, imhdu, w_pri, scale=1., start_tile=0, noise=False, sample=None):
     """Create a replicated map from XID+ with HEALpix tiles
-       Will overwrite existing Master_Map_###.fits if one exists"""
+       Will overwrite existing Replicated_Map_###.fits if one exists"""
 
     import pickle
     from scipy.sparse import coo_matrix
@@ -868,20 +868,30 @@ def make_replicated_map_HEALpix(output_folder, Master_filename, tile_file_name, 
     from xidplus import moc_routines as moc
     from xidplus import posterior_maps as postmaps
 
-    sam = 2999
-
-    if band == 'psw':
+    if tele_band == 'psw':
         b = 0
-    elif band == 'pmw':
+        band = 'psw'
+        tele = 'SPIRE250'
+    elif tele_band == 'pmw':
         b = 1
-    elif band == 'plw':
+        band = 'psw'
+        tele = 'SPIRE350'
+    elif tele_band == 'plw':
         b = 2
-    elif band == 'mips24':
+        band = 'plw'
+        tele = 'SPIRE500'
+    elif tele_band == 'mips24':
         b = 0
-    elif band == 'green':
+        band = 'psw'
+        tele = 'MIPS24'
+    elif tele_band == 'green':
         b = 0
-    elif band == 'red':
+        band = 'psw'
+        tele = 'PACS100'
+    elif tele_band == 'red':
         b = 1
+        band = 'pmw'
+        tele = 'PACS160'
     else:
         print('Incompatible band entered')
         return
@@ -893,6 +903,7 @@ def make_replicated_map_HEALpix(output_folder, Master_filename, tile_file_name, 
 
     order = obj['order']
     tiles = obj['tiles']
+    prior = obj[band]
 
     #Make map array
     pred_map = np.empty_like(im)
@@ -921,17 +932,10 @@ def make_replicated_map_HEALpix(output_folder, Master_filename, tile_file_name, 
                 tilepri = til[band]
                 tilepos = til['posterior']
 
-                #Reshape posterior
-                #(samp,chains,params) = tilepos.stan_fit.shape
-                #flattened_post = tilepos.stan_fit.reshape(samp*chains,params)
-                #fvec = flattened_post[2999,0:tilepri.nsrc+1]
-                #
-                #Map stuff (not quite sure what it is *shrug*)
-                #f = coo_matrix((fvec, (range(0,tilepri.nsrc+1),np.zeros(tilepri.nsrc+1))), shape=(tilepri.nsrc+1, 1))
-                #A = coo_matrix((tilepri.amat_data, (tilepri.amat_row, tilepri.amat_col)), shape=(tilepri.snpix, tilepri.nsrc+1))
-                #rmap_temp = (A*f)
-
-                rmap_array = postmaps.ymod_map(tilepri, tilepos.samples['src_f'][sam,b,:]).reshape(-1)
+                if sample is None:
+                    rmap_array = postmaps.ymod_map(tilepri, np.percentile(tilepos.samples['src_f'][:,b,:],50.0,axis=0)).reshape(-1)
+                else:
+                    rmap_array = postmaps.ymod_map(tilepri, tilepos.samples['src_f'][sample,b,:]).reshape(-1)
 
                 #Find pixels in tile
                 ra, dec = w_pri.wcs_pix2world(tilepri.sx_pix, tilepri.sy_pix, 0)
@@ -942,25 +946,18 @@ def make_replicated_map_HEALpix(output_folder, Master_filename, tile_file_name, 
                 sx = tilepri.sx_pix * keep_pix
                 sy = tilepri.sy_pix * keep_pix
 
-                #med_flux=tilepos.quantileGet(50)
-                #bkg = np.full(tilepos.nsrc,med_flux[((1+mod)*tilepos.nsrc)+mod])[0]  #all background values are the same so just pick one
-                #conf_noise = np.full(tilepos.nsrc,med_flux[(mod*tilepos.nsrc)+3+mod])[0] #all conf_noise is the same so just pick one
-                if band == 'mips24':
-                    bkg = tilepos.samples['bkg'][sam]
+                if sample is None:
+                    bkg = np.percentile(tilepos.samples['bkg'][:,b],50.0,axis=0)
                 else:
-                    bkg = tilepos.samples['bkg'][sam,b]
+                    bkg = tilepos.samples['bkg'][sample,b]
                 #Add tile to map
                 if noise:
-                    total_noise = np.random.normal(scale=np.sqrt(priors[b].snim**2+tilepos.samples['sigma_conf'][sam,b]**2))
+                    if sample is None:
+                        total_noise = np.random.normal(scale=np.sqrt( (tilepri.snim**2) + (np.percentile(tilepos.samples['sigma_conf'][:,b],50.0,axis=0)**2) ))
+                    else:
+                        total_noise = np.random.normal(scale=np.sqrt( (tilepri.snim**2) + (tilepos.samples['sigma_conf'][sample,b]**2) ))
                     pred_map[sy,sx] = rmap_array + bkg + total_noise
-                    #                                          np.random.randn(tilepri.snpix)*\
-                    #                                          np.sqrt(np.square(tilepri.snim)+np.square(conf_noise)) +\
-                    #                                          bkg
                 else:
-                    #print(np.asarray(rmap_temp.todense()).reshape(-1))
-                    #print(bkg)
-                    #print(np.asarray(rmap_temp.todense()).reshape(-1) + bkg)
-                    #pred_map[sy,sx] = np.asarray(rmap_temp.todense()).reshape(-1) + bkg
                     pred_map[sy,sx] = rmap_array + bkg
 
                 #Reset variables in a vain attempt to reduce memory load
@@ -974,7 +971,42 @@ def make_replicated_map_HEALpix(output_folder, Master_filename, tile_file_name, 
                 sx = []
                 sy = []
 
-    fits.writeto(output_folder+'Replicated_Map_'+band+'.fits', pred_map, imhdu, overwrite = True)
+    pred_map /= scale
+
+    pred_map_name = 'Replicated_Map'+tele
+    if sample is not None:
+        pred_map_name += '_'+str(sample)
+    fits.writeto(output_folder+pred_map_name+'.fits', pred_map, imhdu, overwrite=True)
+    return pred_map
+
+def make_residual_map_HEALpix(output_folder, Master_filename, tile_file_name, tele_band, im, imhdu, w_pri, scale=1., start_tile=0, noise=True, sample=None):
+    """Create a replicated and residual maps from XID+ with HEALpix tiles
+       Replicated map is origional map - replicated map
+       Will overwrite existing Replicated_Map_###.fits and Residual_Map_###.fits if they exist"""
+
+    if tele_band == 'psw':
+        tele = 'SPIRE250'
+    elif tele_band == 'pmw':
+        tele = 'SPIRE350'
+    elif tele_band == 'plw':
+        tele = 'SPIRE500'
+    elif tele_band == 'mips24':
+        tele = 'MIPS24'
+    elif tele_band == 'green':
+        tele = 'PACS100'
+    elif tele_band == 'red':
+        tele = 'PACS160'
+    else:
+        print('Incompatible band entered')
+        return
+
+    pred_map = make_replicated_map_HEALpix(output_folder, Master_filename, tile_file_name, tele_band, im, imhdu, w_pri, scale, start_tile, noise, sample)
+    res_map = im - pred_map
+
+    res_map_name = 'Residual_Map_'+tele
+    if sample is not None:
+        res_map_name += '_'+str(sample)
+    fits.writeto(output_folder+res_map_name+'.fits', res_map, imhdu, overwrite = True)
 
 
 def create_XIDp_MIPScat_from_Table(dataTable, prior24):
@@ -1527,7 +1559,7 @@ def make_master_PACS_catalogue_HEALpix(output_folder, Master_filename, tile_file
 
     order = obj['order']
     tiles = obj['tiles']
-    prior100 = obj['green']
+    prior100 = obj['psw']
 
     #Need a master catalogue to add to so do the 0th tile outside the loop
     for i in range(start_tile, len(tiles)):
@@ -1554,8 +1586,8 @@ def make_master_PACS_catalogue_HEALpix(output_folder, Master_filename, tile_file
                 main_start = i+1
                 break
 
-    tilegrn = obj['green']
-    tilered = obj['red']
+    tilegrn = obj['psw']
+    tilered = obj['pmw']
     tilepos = obj['posterior']
 
     master_cat = catalogue.create_PACS_cat(tilepos, tilegrn, tilered)
@@ -1590,8 +1622,8 @@ def make_master_PACS_catalogue_HEALpix(output_folder, Master_filename, tile_file
             else:
                 f.close()
 
-                tilegrn = obj['green']
-                tilered = obj['red']
+                tilegrn = obj['psw']
+                tilered = obj['pmw']
                 tilepos = obj['posterior']
 
                 hdulist = catalogue.create_PACS_cat(tilepos, tilegrn, tilered)

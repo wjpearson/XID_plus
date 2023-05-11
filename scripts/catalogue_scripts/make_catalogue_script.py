@@ -4,9 +4,9 @@ sys.path.append('/home/pearsonw/dev/XID_plus/') #CHANGE ME!
 import xidplus
 from xidplus import extra_functions as extra
 
-output_folder = '/home/pearsonw/dev/XID_plus/output_numpyro/'
+output_folder = '/mnt/disk1/sky_maps/XID_plus_output/'
 tile_file_name = 'MIPS_24_vanilla_'
-Master_filename = 'Master_prior_vanilla.pkl'
+Master_filename = 'Master_MIPS_prior_vanilla.pkl'
 instrument = 'MIPS' #SPIRE or PACS or MIPS
 
 if instrument == 'SPIRE':
