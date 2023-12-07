@@ -553,8 +553,9 @@ def create_SPIRE_cat_post_from_Table(dataTable, prior250, samples_chains):
     #c28 = fits.Column(name='Post_bkg_SPIRE_250', format=str(samples*chains)+'E', unit='mJy', array=dataTable['Post_bkg_SPIRE_250'])
     #c29 = fits.Column(name='Post_bkg_SPIRE_350', format=str(samples*chains)+'E', unit='mJy', array=dataTable['Post_bkg_SPIRE_350'])
     #c30 = fits.Column(name='Post_bkg_SPIRE_500', format=str(samples*chains)+'E', unit='mJy', array=dataTable['Post_bkg_SPIRE_500'])
+    c31 = fits.Column(name='tile', format='K', array=dataTable['tile'].astype(float).astype(int))
 
-    tbhdu = fits.BinTableHDU.from_columns([c1,c2,c3,c4,c5,c6,c7,c8,c9,c10,c11,c12,c13,c14,c15,c16,c17,c18,c19,c20,c21,c22,c23,c24,c25,c26,c27]) #,c28,c29,c30])
+    tbhdu = fits.BinTableHDU.from_columns([c1,c2,c3,c4,c5,c6,c7,c8,c9,c10,c11,c12,c13,c14,c15,c16,c17,c18,c19,c20,c21,c22,c23,c24,c25,c26,c27,c31]) #,c28,c29,c30])
 
     tbhdu.header.set('TUCD1','ID',after='TFORM1')
     tbhdu.header.set('TDESC1','ID of source',after='TUCD1')
@@ -645,6 +646,9 @@ def create_SPIRE_cat_post_from_Table(dataTable, prior250, samples_chains):
 
     #tbhdu.header.set('TUCD30','phot.flux.density',after='TFORM30')
     #tbhdu.header.set('TDESC30','500 bkg samples',after='TUCD30')
+
+    tbhdu.header.set('TUCD28','value',after='TFORM28')
+    tbhdu.header.set('TDESC28','Tile Number',after='TUCD28')
 
     #----Primary header-----------------------------------
     prihdr = fits.Header()
@@ -755,6 +759,7 @@ def make_master_SPIRE_post_catalogue_HEALpix(output_folder, Master_filename, til
 
                 hdulist[1].data = hdulist[1].data[kept_sources]
                 tileTable = Table(hdulist[1].data)
+                tileTable['tile'] = np.full(len(tileTable),i)
                 #Append the tile catalogue to the master catalogue
                 dataTable = vstack([dataTable, tileTable])
 
@@ -1276,8 +1281,9 @@ def create_MIPS_cat_post_from_Table(dataTable, prior24, samples_chains):
     c10 = fits.Column(name='n_eff_MIPS_24', format='E', array=dataTable['n_eff_MIPS_24'])
     c11 = fits.Column(name='Post_MIPS_24', format=str(samples_chains)+'E', unit='uJy', array=dataTable['Post_MIPS_24'])
     #c12 = fits.Column(name='Post_bkg_MIPS_24', format=str(samples*chains)+'E', unit='mJy', array=dataTable['Post_bkg_MIPS_24])
+    c13 = fits.Column(name='tile', format='K', array=dataTable['tile'].astype(float).astype(int))
 
-    tbhdu = fits.BinTableHDU.from_columns([c1,c2,c3,c4,c5,c6,c7,c8,c9,c10,c11]) #,c12])
+    tbhdu = fits.BinTableHDU.from_columns([c1,c2,c3,c4,c5,c6,c7,c8,c9,c10,c11,c13]) #,c12])
 
     tbhdu.header.set('TUCD1','ID',after='TFORM1')
     tbhdu.header.set('TDESC1','ID of source',after='TUCD1')
@@ -1314,7 +1320,9 @@ def create_MIPS_cat_post_from_Table(dataTable, prior24, samples_chains):
 
     #tbhdu.header.set('TUCD12','phot.flux.density',after='TFORM12')
     #tbhdu.header.set('TDESC12','24 bkg samples',after='TUCD12')
-    
+
+    tbhdu.header.set('TUCD12','value',after='TFORM12')
+    tbhdu.header.set('TDESC12','Tile Number',after='TUCD12')
 
     #----Primary header-----------------------------------
     prihdr = fits.Header()
@@ -1421,6 +1429,7 @@ def make_master_MIPS_post_catalogue_HEALpix(output_folder, Master_filename, tile
 
                 hdulist[1].data = hdulist[1].data[kept_sources]
                 tileTable = Table(hdulist[1].data)
+                tileTable['tile'] = np.full(len(tileTable),i)
                 #Append the tile catalogue to the master catalogue
                 dataTable = vstack([dataTable, tileTable])
 
@@ -1786,8 +1795,9 @@ def create_PACS_cat_post_from_Table(dataTable, prior100, samples_chains):
     c19 = fits.Column(name='Post_PACS_160', format=str(samples_chains)+'E', unit='mJy', array=dataTable['Post_PACS_160'])
     #c20 = fits.Column(name='Post_bkg_PACS_100', format=str(samples*chains)+'E', unit='mJy', array=dataTable['Post_bkg_PACS_100'])
     #c21 = fits.Column(name='Post_bkg_PACS_100', format=str(samples*chains)+'E', unit='mJy', array=dataTable['Post_bkg_PACS_100'])
+    c22 = fits.Column(name='tile', format='K', array=dataTable['tile'].astype(float).astype(int))
 
-    tbhdu = fits.BinTableHDU.from_columns([c1,c2,c3,c4,c5,c6,c7,c8,c9,c10,c11,c12,c13,c14,c15,c16,c17,c18,c19]) #,c20,c21])
+    tbhdu = fits.BinTableHDU.from_columns([c1,c2,c3,c4,c5,c6,c7,c8,c9,c10,c11,c12,c13,c14,c15,c16,c17,c18,c19,c22]) #,c20,c21])
 
     tbhdu.header.set('TUCD1','ID',after='TFORM1')
     tbhdu.header.set('TDESC1','ID of source',after='TUCD1')
@@ -1851,7 +1861,9 @@ def create_PACS_cat_post_from_Table(dataTable, prior100, samples_chains):
 
     #tbhdu.header.set('TUCD22','phot.flux.density',after='TFORM22')
     #tbhdu.header.set('TDESC22','160 bkg samples',after='TUCD22')
-    
+
+    tbhdu.header.set('TUCD21','value',after='TFORM21')
+    tbhdu.header.set('TDESC21','Tile Number',after='TUCD21')
 
     #----Primary header-----------------------------------
     prihdr = fits.Header()
@@ -1960,6 +1972,7 @@ def make_master_PACS_post_catalogue_HEALpix(output_folder, Master_filename, tile
 
                 hdulist[1].data = hdulist[1].data[kept_sources]
                 tileTable = Table(hdulist[1].data)
+                tileTable['tile'] = np.full(len(tileTable),i)
                 #Append the tile catalogue to the master catalogue
                 dataTable = vstack([dataTable, tileTable])
 
