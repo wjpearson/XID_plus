@@ -231,7 +231,7 @@ class prior(object):
 
     #!#!#---Add method to set upper limit as flux - WJP---#!#!#
     def upper_lim_flux(self, prior_flux_upper, log10=False):
-        self.flux_scale()
+        #self.flux_scale()
         """Set flux lower limit (in log10)"""
         self.prior_flux_upper = np.full((self.nsrc), prior_flux_upper)
         if log10:
